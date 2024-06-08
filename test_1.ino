@@ -11,7 +11,7 @@ const char* password = "raspberry";  //Enter Password here
 ESP8266WebServer server(80);
 
 uint8_t LEDpin = 2;
-const uint8_t D5pin = 14; // GPIO14 (D5)
+uint8_t D5pin = 14; // GPIO14 (D5)
 const uint8_t D6pin = 12; // GPIO12 (D6)
 bool LEDstatus = LOW;
 bool D5status = LOW;
@@ -82,7 +82,11 @@ void loop() {
   server.handleClient();
   
   // Control LED based on LEDstatus
-  digitalWrite(LEDpin, LEDstatus ? HIGH : LOW);
+digitalWrite(LEDpin, LEDstatus ? HIGH : LOW);
+digitalWrite(D5pin, D5status ? HIGH : LOW);
+digitalWrite(D6pin, D6status ? HIGH : LOW);
+
+
 
   // Update OLED display with serial output
   updateDisplay();
@@ -94,21 +98,22 @@ void handle_OnConnect() {
 }
 
 void handle_ledon() {
-  LEDstatus = LOW;
+  LEDstatus = HIGH;
   server.send(200, "text/html", SendHTML(true)); 
 }
 
 void handle_ledoff() {
-  LEDstatus = HIGH;
+  LEDstatus = LOW;
   server.send(200, "text/html", SendHTML(false)); 
 }
+
 
 
 
 
 void handle_D5On() {
   D5status = LOW;
-  server.send(200, "text/html", SendHTML(false)); 
+  server.send(200, "text/html", SendHTML(true)); 
 }
 
 void handle_D5Off() {
@@ -118,7 +123,7 @@ void handle_D5Off() {
 
 void handle_D6On() {
   D6status = LOW;
-  server.send(200, "text/html", SendHTML(false)); 
+  server.send(200, "text/html", SendHTML(true)); 
 }
 
 void handle_D6Off() {
@@ -175,9 +180,9 @@ String SendHTML(uint8_t led) {
   // Control for the main LED
   ptr +="<form method=\"get\">\n";
   if(led)
-    ptr +="<input type=\"button\" value=\"LED ON\" onclick=\"window.location.href='/ledoff'\">\n";
+    ptr +="<input type=\"button\" value=\"LED ON\" onclick=\"window.location.href='/ledon'\">\n";
   else
-    ptr +="<input type=\"button\" value=\"LED OFF\" onclick=\"window.location.href='/ledon'\">\n";
+    ptr +="<input type=\"button\" value=\"LED OFF\" onclick=\"window.location.href='/ledoff'\">\n";
   ptr +="</form>\n";
 
   // Message form
